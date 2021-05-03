@@ -1,0 +1,28 @@
+{
+  "properties": [
+    {
+      "name": "spring",
+      "type": "java.lang.String",
+      "description": "Description for spring."
+    },
+    {
+      "name": "servlet",
+      "type": "java.lang.String",
+      "description": "Description for servlet."
+    },
+    {
+      "name": "multipart",
+      "type": "java.lang.String",
+      "description": "Description for multipart."
+    },
+    {
+      "name": "max-file-size",
+      "type": "java.lang.String",
+      "description": "Description for max-file-size."
+    },
+    {
+      "name": "file-size-threshold",
+      "type": "java.lang.String",
+      "description": "Description for file-size-threshold."
+    }
+  ] }
