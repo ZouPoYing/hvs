@@ -24,7 +24,8 @@ public class FileDownLoad {
         try {
             fis = new FileInputStream(file);
             //response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
-            response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(file.getName(), "UTF-8"));
+            response.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(
+                    file.getName().substring(file.getName().lastIndexOf('_')+1,file.getName().length()), "UTF-8"));
             IOUtils.copy(fis, response.getOutputStream());
             response.flushBuffer();
         } catch (Exception e) {

@@ -49,21 +49,24 @@ public interface MsgMapper {
             @Result(property = "date", column = "date")})
     public List<Map<String, Object>> queryMsg2(Integer userid);
 
-    @Select("select msg.msgid as msgid,msg.msg as msg,msg.date as date from msg where msg.use=1 and msg.msgtype=11" +
+    @Select("select msg.msgid as msgid,msg.msg as msg,msg.date as date,msg.msgtype as msgtype from msg where" +
+            " msg.use=1 and msg.msgtype=11" +
             " and doctor=#{doctor}" +
             " order by date asc")
     @Results({
             @Result(property = "msgid", column = "msgid"),
             @Result(property = "msg", column = "msg"),
+            @Result(property = "msgtype", column = "msgtype"),
             @Result(property = "date", column = "date")})
     List<Map<String, Object>> queryMsg11(Integer userid);
 
-    @Select("select msg.msgid as msgid,msg.msg as msg,msg.date as date from msg where msg.use=1 and msg.msgtype=12" +
-            " and patient=#{userid}" +
+    @Select("select msg.msgid as msgid,msg.msg as msg,msg.date as date,msg.msgtype as msgtype from msg where" +
+            " msg.use=1 and msg.msgtype in (12,13,14,15) and patient=#{userid}" +
             " order by date desc")
     @Results({
             @Result(property = "msgid", column = "msgid"),
             @Result(property = "msg", column = "msg"),
+            @Result(property = "msgtype", column = "msgtype"),
             @Result(property = "date", column = "date")})
     List<Map<String, Object>> queryMsg12(Integer userid);
 
@@ -86,11 +89,11 @@ public interface MsgMapper {
             ",process.processstep as processstep, process.patient as patient, \n" +
             "user.username as username,user.name as name, user.telephone as telephone,\n" +
             "user.email as email,user.age as age,user.sex as sex,process.filesid as filesid,\n" +
-            "files.filename as filename\n" +
+            "files.filename as filename,user.address as address\n" +
             "  from msg LEFT JOIN process ON msg.processid=process.processid\n" +
             " LEFT JOIN user ON process.patient=user.userid \n" +
             "LEFT JOIN files ON process.filesid=files.fileid\n" +
-            "WHERE msgtype=11 and msg.doctor=#{doctor}")
+            "WHERE msgtype=11 and (process.processstep='就诊' or process.processstep='挂号') and msg.doctor=#{doctor}")
     @Results({
             @Result(property = "msgid", column = "msgid"),
             @Result(property = "processid", column = "processid"),
@@ -102,6 +105,7 @@ public interface MsgMapper {
             @Result(property = "email", column = "email"),
             @Result(property = "age", column = "age"),
             @Result(property = "sex", column = "sex"),
+            @Result(property = "address", column = "address"),
             @Result(property = "filesid", column = "filesid"),
             @Result(property = "filename", column = "filename"),
             @Result(property = "date", column = "date")})

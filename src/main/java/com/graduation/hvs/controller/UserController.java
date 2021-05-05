@@ -50,7 +50,7 @@ public class UserController {
         String password = user.getPassword();
         Map<String, Object> result = new HashMap<>();
         if (userService.login(username,password) == null) {
-            result.put("msg", "用户名或密码错误");
+            result.put("msg", "账号或密码错误");
             return result;
         } else {
             result.put("success", true);
@@ -70,7 +70,7 @@ public class UserController {
             result.put("success", true);
             return result;
         } else {
-            result.put("msg", "用户名已被使用");
+            result.put("msg", "账号已被注册");
             return result;
         }
     }
@@ -84,20 +84,22 @@ public class UserController {
         String telephone = user.getTelephone();
         String email = user.getEmail();
         String sex = user.getSex();
+        String age = user.getAge();
+        String address = user.getAddress();
         Map<String, Object> result = new HashMap<>();
         User user1 = userService.getUserById(userid);
         if (user1.getUsername().equals(username)) {
-            userService.updateUser(userid,username,name,password,telephone,email,sex);
+            userService.updateUser(userid,username,name,password,telephone,email,sex,age,address);
             result.put("success", true);
             result.putAll(EtityUtils.entityToMap(userService.getUserById(userid)));
             return result;
         } else if (userService.hasUsername(username).equals(0)) {
-            userService.updateUser(userid,username,name,password,telephone,email,sex);
+            userService.updateUser(userid,username,name,password,telephone,email,sex,age,address);
             result.put("success", true);
             result.putAll(EtityUtils.entityToMap(userService.getUserById(userid)));
             return result;
         } else {
-            result.put("msg", "用户名已被使用");
+            result.put("msg", "账号已被使用");
             return result;
         }
     }
@@ -105,6 +107,15 @@ public class UserController {
     @RequestMapping("/getDoctorDetail")
     public List<Map<String, Object>> getDoctorDetail() throws Exception {
         List<Map<String, Object>> list = userService.getDoctorDetail();
+        for (Map<String, Object> map:list) {
+            map.put("date", DateUtils.D2NYR(map.get("date")));
+        }
+        return list;
+    }
+
+    @RequestMapping("/getPDetail")
+    public List<Map<String, Object>> getPDetail() throws Exception {
+        List<Map<String, Object>> list = userService.getPDetail();
         for (Map<String, Object> map:list) {
             map.put("date", DateUtils.D2NYR(map.get("date")));
         }
@@ -124,17 +135,18 @@ public class UserController {
         String level = params.get("level");
         String advantage = params.get("advantage");
         String age = params.get("age");
+        String address = params.get("address");
         Map<String, Object> result = new HashMap<>();
         if (username.isEmpty() || password.isEmpty() || usertype.isEmpty()) {
             result.put("msg", "参数不能为空");
             return result;
         }
         if (userService.hasUsername(username)>0) {
-            result.put("msg", "用户名已被使用");
+            result.put("msg", "账号已被使用");
             return result;
         }
         userService.addDoctorDetail(username,name,password,telephone,email,sex,Integer.valueOf(usertype)
-                ,department,age,level,advantage);
+                ,department,age,level,advantage,address);
         result.put("success", true);
         return result;
     }
@@ -152,6 +164,7 @@ public class UserController {
         String level = params.get("level");
         String advantage = params.get("advantage");
         String age = params.get("age");
+        String address = params.get("address");
         String userid = params.get("userid");
         Map<String, Object> result = new HashMap<>();
         if (username.isEmpty() || password.isEmpty() || usertype.isEmpty() || userid.isEmpty()) {
@@ -161,16 +174,16 @@ public class UserController {
         User user1 = userService.getUserById(Integer.valueOf(userid));
         if (user1.getUsername().equals(username)) {
             userService.updateDoctorDetail(username,name,password,telephone,email,sex,Integer.valueOf(usertype)
-                    ,department,age,level,advantage,Integer.valueOf(userid));
+                    ,department,age,level,advantage,address,Integer.valueOf(userid));
             result.put("success", true);
             return result;
         } else if (userService.hasUsername(username).equals(0)) {
             userService.updateDoctorDetail(username,name,password,telephone,email,sex,Integer.valueOf(usertype)
-                    ,department,age,level,advantage,Integer.valueOf(userid));
+                    ,department,age,level,advantage,address,Integer.valueOf(userid));
             result.put("success", true);
             return result;
         } else {
-            result.put("msg", "用户名已被使用");
+            result.put("msg", "账号已被使用");
             return result;
         }
     }
@@ -186,5 +199,120 @@ public class UserController {
         userService.deleteDoctorDetail(Integer.valueOf(userid));
         result.put("success", true);
         return result;
+    }
+
+    @RequestMapping("/getAdmin")
+    public Map<String, Object> getAdmin() throws Exception {
+        Map<String, Object> result = userService.getAdmin();
+        result.put("success", true);
+        return result;
+    }
+
+    @RequestMapping("/getLevel")
+    public List<Map<String, Object>> getLevel() throws Exception {
+        List<String> levels = userService.getLevel();
+        List<Map<String, Object>> results = new ArrayList<>();
+        for (String level : levels) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("text", level);
+            result.put("value", level);
+            results.add(result);
+        }
+        return results;
+    }
+
+    @RequestMapping("/getDepartment")
+    public List<Map<String, Object>> getDepartment() throws Exception {
+        List<String> departments = userService.getDepartment();
+        List<Map<String, Object>> results = new ArrayList<>();
+        for (String department : departments) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("text", department);
+            result.put("value", department);
+            results.add(result);
+        }
+        return results;
+    }
+
+    @RequestMapping("/getTJDepartment")
+    public List<Map<String, Object>> getTJDepartment() throws Exception {
+        List<String> departments = userService.getDepartment();
+        List<Map<String, Object>> results = new ArrayList<>();
+        HashMap<String, Object> qb = new HashMap<>();
+        qb.put("label", "全部");
+        qb.put("value", "全部");
+        results.add(qb);
+        for (String department : departments) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("label", department);
+            result.put("value", department);
+            results.add(result);
+        }
+        return results;
+    }
+
+    @RequestMapping("/getTJDoctor")
+    public List<Map<String, Object>> getTJDoctor(@RequestBody Map<String, String> params) throws Exception {
+        String department = params.get("department");
+        String sub = "";
+        if (!department.isEmpty() && !department.equals("全部")) {
+            sub += " and department='"+department+"'";
+        }
+        List<Map<String, Object>> doctors = userService.getTJDoctor(sub);
+        List<Map<String, Object>> results = new ArrayList<>();
+        HashMap<String, Object> qb = new HashMap<>();
+        qb.put("label", "全部");
+        qb.put("value", "全部");
+        results.add(qb);
+        for (Map<String, Object> doctor : doctors) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("value", doctor.get("userid"));
+            result.put("label", doctor.get("name"));
+            results.add(result);
+        }
+        return results;
+    }
+
+    @RequestMapping("/getStatistics")
+    public List<Map<String, Object>> getStatistics(@RequestBody Map<String, String> params) throws Exception {
+        String tjdate = params.get("tjdate");
+        String tjdepartment = params.get("tjdepartment");
+        String tjdoctor = params.get("tjdoctor");
+        String sub = "";
+        if (!tjdate.isEmpty() && !tjdate.equals("全部")) {
+            sub += " and str_to_date(af2.date,'%Y-%c-%d') = str_to_date(now(),'%Y-%c-%d')";
+        }
+        if (!tjdepartment.isEmpty() && !tjdepartment.equals("全部")) {
+            sub += " and user.department='"+tjdepartment+"'";
+        }
+        if (!tjdoctor.isEmpty() && !tjdoctor.equals("全部")) {
+            sub += " and user.userid='"+tjdoctor+"'";
+        }
+        return userService.getStatistics(sub);
+    }
+
+    @RequestMapping("/getStatisticsPie")
+    public List<Map<String, Object>> getStatisticsPie(@RequestBody Map<String, String> params) throws Exception {
+        String tjdate = params.get("tjdate");
+        String tjdepartment = params.get("tjdepartment");
+        String tjdoctor = params.get("tjdoctor");
+        String sub = "";
+        if (!tjdate.isEmpty() && !tjdate.equals("全部")) {
+            sub += " and str_to_date(af2.date,'%Y-%c-%d') = str_to_date(now(),'%Y-%c-%d')";
+        }
+        if (!tjdepartment.isEmpty() && !tjdepartment.equals("全部")) {
+            sub += " and user.department='"+tjdepartment+"'";
+        }
+        if (!tjdoctor.isEmpty() && !tjdoctor.equals("全部")) {
+            sub += " and user.userid='"+tjdoctor+"'";
+        }
+        List<Map<String, Object>> statisticsPie = userService.getStatisticsPie(sub);
+        if (statisticsPie.isEmpty()) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("value", 0);
+            result.put("name", "无");
+            statisticsPie.add(result);
+        }
+        return statisticsPie;
     }
 }

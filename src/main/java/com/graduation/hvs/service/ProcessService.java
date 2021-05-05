@@ -36,4 +36,20 @@ public class ProcessService {
     public Map<String, Object> getReception(Integer doctor) throws Exception {
         return processMapper.getReception(doctor).get(0);
     }
+
+    public void updateFileid(Integer fileid,Integer processid) throws Exception {
+        processMapper.updateFileid(fileid,processid);
+    }
+
+    public void updateProcessstepByProcessid(String processstep, Integer vformid, Integer processid) throws Exception {
+        processMapper.updateProcessstepByProcessid(processstep,vformid,processid);
+    }
+
+    public Map<String, Object> selectProcessByProcessid(Integer processid) throws Exception {
+        return processMapper.selectProcessByProcessid(processid);
+    }
+
+    public void updatePByProcessid(String processstep, Integer processid) throws Exception {
+        processMapper.updatePByProcessid(processstep,processid);
+    }
 }

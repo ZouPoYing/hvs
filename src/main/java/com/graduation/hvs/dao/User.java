@@ -20,6 +20,7 @@ public class User {
     private String age;
     private String level;
     private String advantage;
+    private String address;
 
     @Override
     public String toString() {
@@ -38,7 +39,16 @@ public class User {
                 ", age='" + age + '\'' +
                 ", level='" + level + '\'' +
                 ", advantage='" + advantage + '\'' +
+                ", address='" + address + '\'' +
                 '}';
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getDepartment() {

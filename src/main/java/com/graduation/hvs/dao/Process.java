@@ -10,6 +10,7 @@ public class Process {
     private Integer patient;
     private Integer doctor;
     private Integer filesid;
+    private Integer vformid;
     private String processstep;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date date;
@@ -21,9 +22,18 @@ public class Process {
                 ", patient=" + patient +
                 ", doctor=" + doctor +
                 ", filesid=" + filesid +
+                ", vformid=" + vformid +
                 ", processstep='" + processstep + '\'' +
                 ", date=" + date +
                 '}';
+    }
+
+    public Integer getVformid() {
+        return vformid;
+    }
+
+    public void setVformid(Integer vformid) {
+        this.vformid = vformid;
     }
 
     public Integer getProcessid() {

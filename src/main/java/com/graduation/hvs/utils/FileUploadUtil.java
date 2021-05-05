@@ -15,7 +15,7 @@ public class FileUploadUtil {
     public static String upload(MultipartFile multipartFile,String userid) throws Exception {
         // 文件存储位置，文件的目录要存在才行，可以先创建文件目录，然后进行存储
         String filename =  userid + "_" + System.currentTimeMillis() + "_" + multipartFile.getOriginalFilename();
-        String filePath = "E:/IDEAProjects/hvs/src/main/resources/static/" + filename;
+        String filePath = "D:/IDEAProjects/hvs/src/main/resources/static/" + filename;
         File file = new File(filePath);
         if (!file.exists()) {
             try {

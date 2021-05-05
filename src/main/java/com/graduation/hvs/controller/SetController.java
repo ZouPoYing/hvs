@@ -50,15 +50,13 @@ public class SetController {
     @RequestMapping("/addSet")
     public Map<String, Object> addSet(@RequestBody Map<String, String> params) throws Exception {
         String filename = params.get("filename");
-        String usertype = params.get("usertype");
-        String px = params.get("px");
         String fileid = params.get("fileid");
         Map<String, Object> result = new HashMap<>();
-        if (filename.isEmpty() || usertype.isEmpty() || px.isEmpty() || fileid.isEmpty()) {
+        if (filename.isEmpty() || fileid.isEmpty()) {
             result.put("msg", "参数不能为空");
             return result;
         }
-        setService.addSet(filename,Integer.valueOf(usertype),Integer.valueOf(px),Integer.valueOf(fileid));
+        setService.addSet(filename,Integer.valueOf(fileid));
         result.put("success", true);
         return result;
     }
@@ -83,10 +81,54 @@ public class SetController {
     @GetMapping("/downloadFile/{filename}")
     public void downloadFile(@PathVariable("filename") String filename, HttpServletRequest request, HttpServletResponse response) {
         //1.获取文件绝对路径
-        String path = "E:/IDEAProjects/hvs/src/main/resources/static/" + filename;
+        String path = "D:/IDEAProjects/hvs/src/main/resources/static/" + filename;
         //2.通过绝对路径定义File
         File f=new File(path);
         //3.调用FileUtil下载文件
         FileDownLoad.downloadFile(request,response,f,false);
+    }
+
+    @RequestMapping("/deleteSet")
+    public Map<String, Object> deleteSet(@RequestBody Map<String, String> params) throws Exception {
+        String id = params.get("id");
+        Map<String, Object> result = new HashMap<>();
+        if (id.isEmpty()) {
+            result.put("msg", "参数不能为空");
+            return result;
+        }
+        Set set = setService.selectById(Integer.valueOf(id));
+        if (set.getPx()==1) {
+            result.put("msg", "不能删除正在使用的病历本");
+            return result;
+        }
+        setService.deleteById(Integer.valueOf(id));
+        result.put("success", true);
+        return result;
+    }
+
+    @RequestMapping("/updateSet")
+    public Map<String, Object> updateSet(@RequestBody Map<String, String> params) throws Exception {
+        String id = params.get("id");
+        String filename = params.get("filename");
+        String px = params.get("px");
+        Map<String, Object> result = new HashMap<>();
+        if (id.isEmpty() || filename.isEmpty() || px.isEmpty()) {
+            result.put("msg", "参数不能为空");
+            return result;
+        }
+        if (px.equals("是")) {
+            px = "1";
+            setService.updateOtherSet(Integer.valueOf(id));
+        } else {
+            px = "0";
+        }
+        setService.updateSet(filename,Integer.valueOf(px),Integer.valueOf(id));
+        result.put("success", true);
+        return result;
+    }
+
+    @RequestMapping("/getSetFilename")
+    public Map<String, Object> getSetFilename() throws Exception {
+        return setService.getSetFile();
     }
 }

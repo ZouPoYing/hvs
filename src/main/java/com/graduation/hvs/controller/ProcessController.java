@@ -34,7 +34,7 @@ public class ProcessController {
         String doctor = params.get("doctor");
         String fileid = params.get("fileid");
         Map<String, Object> result = new HashMap<>();
-        if (doctor.isEmpty() || userid.isEmpty()) {
+        if (doctor.isEmpty() || userid.isEmpty() || fileid.isEmpty()) {
             result.put("msg", "参数不能为空");
             return result;
         }
@@ -95,6 +95,64 @@ public class ProcessController {
         result.putAll(processService.getReception(Integer.valueOf(userid)));
         result.put("file", result.get("filename").toString().substring(result.get("filename").toString().replaceFirst("_","-").indexOf("_")+1));
         result.put("date", DateUtils.D2NYR(result.get("date")));
+        return result;
+    }
+
+    @RequestMapping("/updateFileid")
+    public Map<String, Object> updateFileid(@RequestBody Map<String, String> params) throws Exception {
+        String fileid = params.get("fileid");
+        String processid = params.get("processid");
+        Map<String, Object> result = new HashMap<>();
+        if (processid.isEmpty() || fileid.isEmpty()) {
+            result.put("msg", "参数不能为空");
+            return result;
+        }
+        processService.updateFileid(Integer.valueOf(fileid),Integer.valueOf(processid));
+        result.put("success", true);
+        return result;
+    }
+
+    @RequestMapping("/updateP")
+    public Map<String, Object> updateP(@RequestBody Map<String, String> params) throws Exception {
+        String processid = params.get("processid");
+        String doctor = params.get("doctor");
+        String userid = params.get("userid");
+        Map<String, Object> result = new HashMap<>();
+        if (processid.isEmpty() || doctor.isEmpty() || userid.isEmpty()) {
+            result.put("msg", "参数不能为空");
+            return result;
+        }
+        Map<String, Object> map = processService.selectProcessByProcessid(Integer.valueOf(processid));
+        if (!map.get("processstep").equals("缴费")) {
+            result.put("msg", "已缴费，无需再次缴费");
+            return result;
+        }
+        processService.updatePByProcessid("取药",Integer.valueOf(processid));
+        String msg = "恭喜你缴费成功，现在可以去取药了！";
+        msgService.addMsgHvs(msg,14,Integer.valueOf(processid),Integer.valueOf(userid),Integer.valueOf(doctor));
+        result.put("success", true);
+        return result;
+    }
+
+    @RequestMapping("/updateP1")
+    public Map<String, Object> updateP1(@RequestBody Map<String, String> params) throws Exception {
+        String processid = params.get("processid");
+        String patient = params.get("patient");
+        String userid = params.get("userid");
+        Map<String, Object> result = new HashMap<>();
+        if (processid.isEmpty()) {
+            result.put("msg", "参数不能为空");
+            return result;
+        }
+        Map<String, Object> map = processService.selectProcessByProcessid(Integer.valueOf(processid));
+        if (!map.get("processstep").equals("取药")) {
+            result.put("msg", "已取药确认，无需再次确认");
+            return result;
+        }
+        processService.updatePByProcessid("结束",Integer.valueOf(processid));
+        String msg = "恭喜你取药成功，现在就诊流程已经全部完成，祝您早日康复！";
+        msgService.addMsgHvs(msg,15,Integer.valueOf(processid),Integer.valueOf(patient),Integer.valueOf(userid));
+        result.put("success", true);
         return result;
     }
 }

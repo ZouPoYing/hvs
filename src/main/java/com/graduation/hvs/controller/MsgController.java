@@ -76,6 +76,7 @@ public class MsgController {
         SimpleDateFormat sj = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
         for (Map<String, Object> map : list) {
             map.put("date", sj.format(map.get("date")));
+            map.put("title", "预约挂号");
         }
         return list;
     }
@@ -105,6 +106,15 @@ public class MsgController {
         SimpleDateFormat sj = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
         for (Map<String, Object> map : list) {
             map.put("date", sj.format(map.get("date")));
+            if ((int) map.get("msgtype")==12) {
+                map.put("title", "接诊消息");
+            } else if ((int) map.get("msgtype")==13){
+                map.put("title", "缴费提醒");
+            } else if ((int) map.get("msgtype")==14){
+                map.put("title", "缴费成功");
+            } else {
+                map.put("title", "取药成功");
+            }
         }
         return list;
     }
